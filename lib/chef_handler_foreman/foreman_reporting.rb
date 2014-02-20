@@ -17,6 +17,10 @@ module ChefHandlerForeman
   class ForemanReporting < ::Chef::Handler
     attr_accessor :uploader
 
+    def initialize(opts = {})
+      @uploader = opts[:uploader]
+    end
+
     def report
       report                   = { 'host' => node.fqdn, 'reported_at' => Time.now.utc.to_s }
       report_status            = Hash.new(0)

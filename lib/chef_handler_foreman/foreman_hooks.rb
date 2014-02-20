@@ -20,30 +20,36 @@ module ChefHandlerForeman
       @foreman_reporter.uploader = @foreman_uploader if @foreman_reporter
     end
 
-    def foreman_facts_upload(upload)
+    def foreman_facts_upload(upload, options = {})
       if upload
-        @foreman_facts_handler          = ForemanFacts.new
-        @foreman_facts_handler.uploader = @foreman_uploader
+        @foreman_facts_handler = ForemanFacts.new({
+          :uploader  => @foreman_uploader,
+        }.merge(options))
         report_handlers << @foreman_facts_handler
         exception_handlers << @foreman_facts_handler
       end
     end
 
-    def foreman_reports_upload(upload, mode = 1)
+    def foreman_reports_upload(upload, *args)
       if upload
+        mode = args.first.is_a?(Fixnum) ? args.shift : 1
+        options = args.shift || {}
+        mode = options[:mode] if options[:mode]
         case mode
           when 1
-            @foreman_reporter           = ForemanResourceReporter.new(nil)
-            @foreman_reporter.uploader  = @foreman_uploader
-            @foreman_reporter.log_level = @foreman_reports_log_level
+            @foreman_reporter = ForemanResourceReporter.new({
+              :uploader  => @foreman_uploader,
+              :log_level => @foreman_reports_log_level,
+            }.merge(options))
             if Chef::Config[:event_handlers].is_a?(Array)
               Chef::Config[:event_handlers].push @foreman_reporter
             else
               Chef::Config[:event_handlers] = [@foreman_reporter]
             end
           when 2
-            @foreman_report_handler          = ForemanReporting.new
-            @foreman_report_handler.uploader = @foreman_uploader
+            @foreman_report_handler = ForemanReporting.new({
+              :uploader  => @foreman_uploader,
+            }.merge(options))
             report_handlers << @foreman_report_handler
             exception_handlers << @foreman_report_handler
           else

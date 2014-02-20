@@ -17,6 +17,10 @@ module ChefHandlerForeman
   class ForemanFacts < Chef::Handler
     attr_accessor :uploader
 
+    def initialize(opts = {})
+      @uploader = opts[:uploader]
+    end
+
     def report
       send_attributes(prepare_facts)
     end

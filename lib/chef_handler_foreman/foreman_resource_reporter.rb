@@ -2,7 +2,9 @@ module ChefHandlerForeman
   class ForemanResourceReporter < ::Chef::ResourceReporter
     attr_accessor :uploader, :log_level
 
-    def initialize(*args)
+    def initialize(opts = {})
+      @uploader             = opts[:uploader]
+      @log_level            = opts[:log_level]
       @total_up_to_date     = 0
       @total_skipped        = 0
       @total_updated        = 0
@@ -10,7 +12,7 @@ module ChefHandlerForeman
       @total_restarted      = 0
       @total_failed_restart = 0
       @all_resources        = []
-      super
+      super(nil)
     end
 
     def run_started(run_status)
